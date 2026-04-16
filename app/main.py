@@ -8,20 +8,27 @@ def move_file(command: str) -> None:
         source_path = command_parts[1]
         dest_path = command_parts[2]
 
-        if dest_path.endswith("/"):
+        is_dir = dest_path.endswith(("/", "\\", os.path.sep))
+
+        filename = os.path.basename(source_path)
+
+        if is_dir:
             dir_path = dest_path
-            filename = source_path.split("/")[-1]
-            final_dest_path = dir_path + filename
+            final_dest_path = os.path.join(dir_path, filename)
         else:
             final_dest_path = dest_path
-
-            if "/" in dest_path:
-                dir_path = "/".join(dest_path.split("/")[:-1])
-            else:
-                dir_path = ""
+            dir_path = os.path.dirname(dest_path)
 
         if dir_path:
-            os.makedirs(dir_path, exist_ok=True)
+            clean_dir_path = os.path.normpath(dir_path)
+            folders = clean_dir_path.split(os.sep)
+
+            current_path = ""
+            for folder in folders:
+                if folder:
+                    current_path = os.path.join(current_path, folder) if current_path else folder
+                    if not os.path.exists(current_path):
+                        os.mkdir(current_path)
 
         with (
             open(source_path, "r") as f_source,
