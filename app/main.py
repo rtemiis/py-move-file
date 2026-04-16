@@ -26,7 +26,11 @@ def move_file(command: str) -> None:
             current_path = ""
             for folder in folders:
                 if folder:
-                    current_path = os.path.join(current_path, folder) if current_path else folder
+                    if current_path:
+                        current_path = os.path.join(current_path, folder)
+                    else:
+                        current_path = folder
+
                     if not os.path.exists(current_path):
                         os.mkdir(current_path)
 
